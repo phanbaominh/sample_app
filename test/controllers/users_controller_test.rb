@@ -4,6 +4,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   def setup
     @user = users(:michael)
     @other_user = users(:archer)
+    @unactivated = users(:unactivated)
   end
   test 'should not allow updating admin param through url' do
     log_in_as(@other_user)
@@ -63,7 +64,13 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_url
   end
 
-  
+  test "should redirect show when shown user not activated" do
+    log_in_as(@user)
+    get user_path(@other_user)
+    assert_template 'users/show'
+    get user_path(@unactivated)
+    assert_redirected_to root_path
+  end
   test "should get new" do
     get signup_path
     assert_response :success
